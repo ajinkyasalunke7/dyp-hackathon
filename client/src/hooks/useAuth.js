@@ -3,7 +3,7 @@ import useSWR from "swr";
 import axios from "axios";
 
 const fetcher = async () => {
-   const result = await axios.get("http://localhost:5000/api/auth/me", {
+   const result = await axios.get("http://192.168.151.58:5000/api/auth/me", {
       withCredentials: true,
    });
    console.log("User fetched:", result.data.data); // log user data

@@ -17,18 +17,24 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = [
+   "http://localhost:5173",
+   "http://192.168.151.58:5173",
+   process.env.FRONTEND_URL, // optional env
+].filter(Boolean); // remove undefined/null
+
 app.use(
    cors({
-      origin: [
-         process.env.FRONTEND_URL || "http://localhost:5173",
-         "*",
-         "http://192.168.151.58:5173",
-      ],
+      origin: function (origin, callback) {
+         if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+         } else {
+            callback(new Error("CORS not allowed for this origin: " + origin));
+         }
+      },
       credentials: true,
-      // allowedHeaders: ["Content-Type", "Authorization"],
    })
 );
-
 export const prisma = new PrismaClient();
 
 // Routes

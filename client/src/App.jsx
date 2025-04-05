@@ -5,7 +5,8 @@ import UpdateProfilePage from "./pages/Profile/UpdateProfile";
 import Home from "./pages/Auth/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Me from "./pages/Auth/Me";
-import MatchMakingPage from "./pages/PeerToPeer/MatchMakingPage";
+import PeerSearch from "./pages/PeerToPeer/PeerSearch";
+import VideoCallPage from "./pages/PeerToPeer/VideoCallPage";
 
 function App() {
    return (
@@ -30,7 +31,15 @@ function App() {
                path="/search-peer"
                element={
                   <ProtectedRoute>
-                     <MatchMakingPage />
+                     <PeerSearch />
+                  </ProtectedRoute>
+               }
+            />
+            <Route
+               path="/video-call/:id"
+               element={
+                  <ProtectedRoute>
+                     <VideoCallPage />
                   </ProtectedRoute>
                }
             />
