@@ -74,41 +74,62 @@ export const getUserProfile = async (req, res, next) => {
    }
 };
 
-// Add a strength to user profile
 export const addStrength = async (req, res, next) => {
    try {
       const { skill } = req.body;
       const userId = req.user.id;
 
-      if (!skill) {
-         return errorResponse(res, 400, "Skill is required");
+      if (!Array.isArray(skill) || skill.length === 0) {
+         return errorResponse(res, 400, "Skill must be a non-empty array");
       }
 
-      // Check if strength already exists
-      const existingStrength = await prisma.userStrength.findFirst({
+      const normalizedSkills = [
+         ...new Set(skill.map((s) => s.toLowerCase().trim())),
+      ];
+
+      // Find existing skills for the user
+      const existingSkills = await prisma.userStrength.findMany({
          where: {
             userId,
-            skill,
+            skill: {
+               in: normalizedSkills,
+            },
          },
       });
 
-      if (existingStrength) {
+      const existingSkillSet = new Set(existingSkills.map((s) => s.skill));
+
+      // Filter skills not already in DB
+      const newSkills = normalizedSkills.filter(
+         (s) => !existingSkillSet.has(s)
+      );
+
+      if (newSkills.length === 0) {
          return errorResponse(
             res,
             409,
-            "This skill is already in your strengths"
+            "All provided skills already exist in your strengths"
          );
       }
 
-      // Add strength
-      const strength = await prisma.userStrength.create({
-         data: {
-            skill: skill.toLowerCase(),
-            userId,
-         },
-      });
+      // Add new skills
+      const addedSkills = await prisma.$transaction(
+         newSkills.map((s) =>
+            prisma.userStrength.create({
+               data: {
+                  userId,
+                  skill: s,
+               },
+            })
+         )
+      );
 
-      return successResponse(res, 201, "Strength added successfully", strength);
+      return successResponse(
+         res,
+         201,
+         "New skills added successfully",
+         addedSkills
+      );
    } catch (error) {
       next(error);
    }
@@ -146,35 +167,56 @@ export const addWeakness = async (req, res, next) => {
       const { skill } = req.body;
       const userId = req.user.id;
 
-      if (!skill) {
-         return errorResponse(res, 400, "Skill is required");
+      if (!Array.isArray(skill) || skill.length === 0) {
+         return errorResponse(res, 400, "Skill must be a non-empty array");
       }
 
-      // Check if weakness already exists
-      const existingWeakness = await prisma.userWeakness.findFirst({
+      // Normalize & deduplicate skills
+      const normalizedSkills = [
+         ...new Set(skill.map((s) => s.toLowerCase().trim())),
+      ];
+
+      // Find existing weaknesses for the user
+      const existingWeaknesses = await prisma.userWeakness.findMany({
          where: {
             userId,
-            skill,
+            skill: {
+               in: normalizedSkills,
+            },
          },
       });
 
-      if (existingWeakness) {
+      const existingSet = new Set(existingWeaknesses.map((w) => w.skill));
+
+      // Filter new skills
+      const newSkills = normalizedSkills.filter((s) => !existingSet.has(s));
+
+      if (newSkills.length === 0) {
          return errorResponse(
             res,
             409,
-            "This skill is already in your weaknesses"
+            "All provided skills already exist in your weaknesses"
          );
       }
 
-      // Add weakness
-      const weakness = await prisma.userWeakness.create({
-         data: {
-            skill,
-            userId,
-         },
-      });
+      // Insert new weaknesses
+      const addedWeaknesses = await prisma.$transaction(
+         newSkills.map((s) =>
+            prisma.userWeakness.create({
+               data: {
+                  userId,
+                  skill: s,
+               },
+            })
+         )
+      );
 
-      return successResponse(res, 201, "Weakness added successfully", weakness);
+      return successResponse(
+         res,
+         201,
+         "Weaknesses added successfully",
+         addedWeaknesses
+      );
    } catch (error) {
       next(error);
    }

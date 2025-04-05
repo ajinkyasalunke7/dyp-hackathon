@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2 } from "lucide-react";
+import apiRequest from "../../utils/apiRequest";
+import { enqueueSnackbar } from "notistack";
 
 const registerSchema = z.object({
    fullname: z
@@ -15,7 +17,7 @@ const registerSchema = z.object({
    email: z.string().email({ message: "Invalid email address" }),
    password: z
       .string()
-      .min(6, { message: "Password must be at least 6 characters" }),
+      .min(3, { message: "Password must be at least 6 characters" }),
 });
 
 const RegisterPage = () => {
@@ -28,8 +30,26 @@ const RegisterPage = () => {
    });
 
    const onSubmit = async (data) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Registering:", data);
+      try {
+         const result = await apiRequest("post", "/api/auth/register", data);
+         // console.log("Post successful:", result);
+         if (result.data == false) {
+            enqueueSnackbar(result.message, {
+               autoHideDuration: 2000,
+               variant: "error",
+            });
+         }
+         if (result.success == true) {
+            enqueueSnackbar(result.message, {
+               autoHideDuration: 2000,
+               variant: "success",
+            });
+         }
+      } catch (error) {
+         enqueueSnackbar(error, { autoHideDuration: 3000, variant: "error" });
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 3000));
    };
 
    return (
