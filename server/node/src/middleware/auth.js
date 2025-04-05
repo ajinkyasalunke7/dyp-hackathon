@@ -5,6 +5,7 @@ import { errorResponse } from "../utils/responses.js";
 export const authenticate = async (req, res, next) => {
    try {
       const token = req.cookies.token;
+      console.log(req.cookies);
 
       if (!token) {
          return errorResponse(res, 401, "Authentication required");

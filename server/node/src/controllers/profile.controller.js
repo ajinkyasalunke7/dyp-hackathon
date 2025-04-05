@@ -78,6 +78,8 @@ export const getUserProfile = async (req, res, next) => {
 export const addStrength = async (req, res, next) => {
    try {
       const { skill } = req.body;
+      console.log(skill);
+      // const skill = strengths;
       const userId = req.user.id;
 
       if (!Array.isArray(skill) || skill.length === 0) {
@@ -165,7 +167,10 @@ export const removeStrength = async (req, res, next) => {
 // Add a weakness to user profile
 export const addWeakness = async (req, res, next) => {
    try {
-      const { skill } = req.body;
+      const { weaknesses } = req.body;
+      console.log("weak", req.body);
+      console.log(weaknesses);
+      const skill = weaknesses;
       const userId = req.user.id;
 
       if (!Array.isArray(skill) || skill.length === 0) {

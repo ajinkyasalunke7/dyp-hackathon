@@ -37,24 +37,42 @@ const updateStatusAndProfession = async (data) => {
 };
 
 const submitStrengthsWeaknesses = async (data) => {
-   console.log(data);
-   // try {
-   //    const result = await apiRequest("put", "/api/profile/update", data);
-   //    if (result.data == false) {
-   //       enqueueSnackbar(result.message, {
-   //          autoHideDuration: 2000,
-   //          variant: "error",
-   //       });
-   //    }
-   //    if (result.success == true) {
-   //       enqueueSnackbar(result.message, {
-   //          autoHideDuration: 2000,
-   //          variant: "success",
-   //       });
-   //    }
-   // } catch (error) {
-   //    enqueueSnackbar(error, { autoHideDuration: 3000, variant: "error" });
-   // }
+   console.log(data.strengths);
+   try {
+      const result = await apiRequest("post", "/api/profile/strengths", {
+         skill: data.strengths,
+      });
+      if (result.data == false) {
+         enqueueSnackbar(result.message, {
+            autoHideDuration: 2000,
+            variant: "error",
+         });
+      }
+      if (result.success == true) {
+         enqueueSnackbar(result.message, {
+            autoHideDuration: 2000,
+            variant: "success",
+         });
+      }
+
+      const weak_result = await apiRequest("post", "/api/profile/weaknesses", {
+         skill: data.weaknesses,
+      });
+      if (result.data == false) {
+         enqueueSnackbar(weak_result.message, {
+            autoHideDuration: 2000,
+            variant: "error",
+         });
+      }
+      if (weak_result.success == true) {
+         enqueueSnackbar(weak_result.message, {
+            autoHideDuration: 2000,
+            variant: "success",
+         });
+      }
+   } catch (error) {
+      enqueueSnackbar(error, { autoHideDuration: 3000, variant: "error" });
+   }
 };
 
 // Zod validation

@@ -6,7 +6,7 @@ import * as z from "zod";
 import { Loader2 } from "lucide-react";
 import apiRequest from "../../utils/apiRequest";
 import { enqueueSnackbar } from "notistack";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const registerSchema = z.object({
    fullname: z
@@ -162,6 +162,13 @@ const RegisterPage = () => {
                   )}
                </button>
             </form>
+            <Link to={"/login"}>
+               <div className="mt-4 flex flex-row">
+                  <span>Already have an account?</span>
+                  &nbsp;
+                  <h1 className="underline text-blue-600">Login here!</h1>
+               </div>
+            </Link>
          </div>
       </div>
    );

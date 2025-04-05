@@ -6,7 +6,7 @@ import * as z from "zod";
 import { Loader2 } from "lucide-react";
 import { enqueueSnackbar } from "notistack";
 import apiRequest from "../../utils/apiRequest";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
    usernameOrEmail: z
@@ -47,8 +47,8 @@ const LoginPage = () => {
                autoHideDuration: 2000,
                variant: "success",
             });
+            navigate("/update-profile");
          }
-         navigate("/update-profile");
       } catch (error) {
          enqueueSnackbar(error, { autoHideDuration: 3000, variant: "error" });
       }
@@ -117,6 +117,13 @@ const LoginPage = () => {
                   )}
                </button>
             </form>
+            <Link to={"/register"}>
+               <div className="mt-4 flex flex-row">
+                  <span>Don't have account?</span>
+                  &nbsp;
+                  <h1 className="underline text-blue-600">Create here!</h1>
+               </div>
+            </Link>
          </div>
       </div>
    );
