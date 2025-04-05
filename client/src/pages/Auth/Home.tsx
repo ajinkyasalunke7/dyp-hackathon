@@ -74,8 +74,13 @@ function Home() {
                               href="#features"
                               className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-highlight hover:bg-accent md:py-4 md:text-lg md:px-10"
                            >
-                              Learn More
-                              <ArrowRight className="ml-2 h-5 w-5" />
+                              <Link
+                                 to="/peer-search"
+                                 className="inline-flex items-center px-4 py-2 border border-transparent text-m font-medium rounded-md text-white-600 hover:text-highlight"
+                              >
+                                 Find Your Peer
+                                 <ArrowRight className="ml-2 h-4 w-4" />
+                              </Link>
                            </a>
                         </div>
                      </div>

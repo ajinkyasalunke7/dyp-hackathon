@@ -4,6 +4,7 @@ import RegisterPage from "./pages/Auth/RegisterPage";
 import UpdateProfilePage from "./pages/Profile/UpdateProfile";
 import Home from "./pages/Auth/Home";
 import Blog from "./pages/Profile/Blog";
+import PeerSearch from "./pages/PeerSearch";
 
 function App() {
    return (
@@ -17,6 +18,7 @@ function App() {
             {/* Protected route */}
             <Route path="/update-profile" element={<UpdateProfilePage />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/peer-search" element={<PeerSearch />} />
             {/* <Route path="/" element={<h1 className="bg-red-400">/ Route</h1>} /> */}
          </Routes>
       </>
