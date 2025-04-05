@@ -6,6 +6,7 @@ import * as z from "zod";
 import { Loader2 } from "lucide-react";
 import apiRequest from "../../utils/apiRequest";
 import { enqueueSnackbar } from "notistack";
+import { useNavigate } from "react-router";
 
 const registerSchema = z.object({
    fullname: z
@@ -21,6 +22,7 @@ const registerSchema = z.object({
 });
 
 const RegisterPage = () => {
+   const navigate = useNavigate();
    const {
       register,
       handleSubmit,
@@ -46,6 +48,7 @@ const RegisterPage = () => {
                variant: "success",
             });
          }
+         navigate("/login");
       } catch (error) {
          enqueueSnackbar(error, { autoHideDuration: 3000, variant: "error" });
       }

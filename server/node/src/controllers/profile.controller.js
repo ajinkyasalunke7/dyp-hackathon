@@ -6,6 +6,7 @@ export const updateProfile = async (req, res, next) => {
    try {
       const { profession, currentStatus } = req.body;
       const userId = req.user.id;
+      console.log(profession, currentStatus);
 
       // Update user profile
       const updatedUser = await prisma.user.update({

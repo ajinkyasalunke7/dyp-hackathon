@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2 } from "lucide-react";
+import { enqueueSnackbar } from "notistack";
+import apiRequest from "../../utils/apiRequest";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
    usernameOrEmail: z
@@ -11,10 +14,11 @@ const loginSchema = z.object({
       .min(1, { message: "Username or Email is required" }),
    password: z
       .string()
-      .min(6, { message: "Password must be at least 6 characters" }),
+      .min(3, { message: "Password must be at least 6 characters" }),
 });
 
 const LoginPage = () => {
+   const navigate = useNavigate();
    const {
       register,
       handleSubmit,
@@ -23,9 +27,31 @@ const LoginPage = () => {
       resolver: zodResolver(loginSchema),
    });
 
+   // const onSubmit = async (data) => {
+   //    await new Promise((resolve) => setTimeout(resolve, 1000));
+   //    console.log("Logging in:", data);
+   // };
+
    const onSubmit = async (data) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Logging in:", data);
+      console.log("Registering:", data);
+      try {
+         const result = await apiRequest("post", "/api/auth/login", data);
+         if (result.data == false) {
+            enqueueSnackbar(result.message, {
+               autoHideDuration: 2000,
+               variant: "error",
+            });
+         }
+         if (result.success == true) {
+            enqueueSnackbar(result.message, {
+               autoHideDuration: 2000,
+               variant: "success",
+            });
+         }
+         navigate("/update-profile");
+      } catch (error) {
+         enqueueSnackbar(error, { autoHideDuration: 3000, variant: "error" });
+      }
    };
 
    return (
