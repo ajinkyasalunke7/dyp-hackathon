@@ -9,6 +9,8 @@ import profileRoutes from "./routes/profile.routes.js";
 import blogRoutes from "./routes/blog.routes.js";
 import questionRoutes from "./routes/question.routes.js";
 import answerRoutes from "./routes/answer.routes.js";
+import matchP2p from "./routes/p2p.routes.js";
+
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -42,6 +44,8 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/answers", answerRoutes);
+
+app.use("/api/p2p", matchP2p);
 
 // Error handling middleware
 app.use(errorHandler);

@@ -5,6 +5,7 @@ import UpdateProfilePage from "./pages/Profile/UpdateProfile";
 import Home from "./pages/Auth/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Me from "./pages/Auth/Me";
+import MatchMakingPage from "./pages/PeerToPeer/MatchMakingPage";
 
 function App() {
    return (
@@ -22,6 +23,14 @@ function App() {
                element={
                   <ProtectedRoute>
                      <UpdateProfilePage />
+                  </ProtectedRoute>
+               }
+            />
+            <Route
+               path="/search-peer"
+               element={
+                  <ProtectedRoute>
+                     <MatchMakingPage />
                   </ProtectedRoute>
                }
             />
