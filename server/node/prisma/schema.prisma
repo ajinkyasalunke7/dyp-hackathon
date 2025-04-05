@@ -1,0 +1,126 @@
+// Define MongoDB as the datasource
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// Generator for Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User model: With profession and xp_points
+model User {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  username      String   @unique // Required during account creation
+  email         String   @unique // Required during account creation
+  password      String // Required during account creation (hashed)
+  profession    String? // Optional, added during profile completion (e.g., "Student", "Teacher")
+  xp_points     Int      @default(0) // Tracks XP points earned from ratings
+  currentStatus String   @default("offline") // "online", "offline", "dnd"
+  role          String?  @default("user") // Optional: "user", "admin"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Optional fields (completed during profile setup)
+  strengths  UserStrength[]
+  weaknesses UserWeakness[]
+
+  // Chatting relationships
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
+  // Q&A and blog relationships
+  questions Question[]
+  answers   Answer[]
+  blogs     Blog[]
+
+  // Ratings received from other users
+  ratings Rating[] @relation("RatedUser")
+  Rating  Rating[]
+}
+
+// UserStrength: Skills a user is good at
+model UserStrength {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  skill  String // e.g., "Math", "Javascript"
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skill])
+}
+
+// UserWeakness: Skills a user needs help with
+model UserWeakness {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  skill  String // e.g., "Math", "Javascript"
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skill])
+}
+
+// Message: Private chat between users
+model Message {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  senderId   String   @db.ObjectId
+  receiverId String   @db.ObjectId
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+// Question: StackOverflow-like questions
+model Question {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers Answer[]
+}
+
+// Answer: Responses to questions
+model Answer {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  userId     String   @db.ObjectId
+  questionId String   @db.ObjectId
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+// Blog: Medium-like blog posts
+model Blog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Rating: Stores star ratings and calculates XP points
+model Rating {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  raterId     String   @db.ObjectId // User who gives the rating (with doubt)
+  ratedUserId String   @db.ObjectId // User who helped (rated)
+  stars       Int // 1 to 5 stars
+  xpAwarded   Int // XP points awarded based on stars (e.g., stars * 10)
+  createdAt   DateTime @default(now())
+
+  rater     User @relation(fields: [raterId], references: [id], onDelete: Cascade)
+  ratedUser User @relation("RatedUser", fields: [ratedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([raterId, ratedUserId]) // Prevent multiple ratings from same rater to same user
+}
